@@ -1,68 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import * as Survey from 'survey-react';
 
-class Square extends React.Component {
-  render() {
-    return (
-      <button className="square">
-        {/* TODO */}
-      </button>
-    );
-  }
-}
+var surveyJSON = { title: "Tell us, what technologies do you use?", pages: [
+  { name:"page1", questions: [ 
+      { type: "radiogroup", choices: [ "Yes", "No" ], isRequired: true, name: "frameworkUsing",title: "Do you use any front-end framework like Bootstrap?" },
+      { type: "checkbox", choices: ["Bootstrap","Foundation"], hasOther: true, isRequired: true, name: "framework", title: "What front-end framework do you use?", visibleIf: "{frameworkUsing} = 'Yes'" }
+   ]},
+  { name: "page2", questions: [
+    { type: "radiogroup", choices: ["Yes","No"],isRequired: true, name: "mvvmUsing", title: "Do you use any MVVM framework?" },
+    { type: "checkbox", choices: [ "AngularJS", "KnockoutJS", "React" ], hasOther: true, isRequired: true, name: "mvvm", title: "What MVVM framework do you use?", visibleIf: "{mvvmUsing} = 'Yes'" } ] },
+  { name: "page3",questions: [
+    { type: "comment", name: "about", title: "Please tell us about your main requirements for Survey library" } ] }
+ ]
+};
 
-class Board extends React.Component {
-  renderSquare(i) {
-    return <Square />;
-  }
-
-  render() {
-    const status = 'Next player: X';
-
-    return (
-      <div>
-        <div className="status">{status}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
-  }
-}
-
-class Game extends React.Component {
-  render() {
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
-        </div>
-      </div>
-    );
-  }
-}
-
-// ========================================
+Survey.StylesManager.applyTheme("bootstrap");
 
 ReactDOM.render(
-  <Game />,
-  document.getElementById('root')
-);
+  <Survey.SurveyWindow json={surveyJSON} onComplete={sendDataToServer}/>,
+  document.getElementById("surveyContainer"));
 
+  ReactDOM.render(
+    <Survey.Survey json={surveyJSON} onComplete={sendDataToServer}/>,
+    document.getElementById("surveyContainer"));
+
+    function sendDataToServer(survey) {
+      var resultAsString = JSON.stringify(survey.data);
+      alert(resultAsString); //send Ajax request to your web server.
+    }
